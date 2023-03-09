@@ -1,0 +1,6 @@
+
+fn hamwith(one) 
+	10
+end
+
+hamwith(thereere, fjdjaklk)
