@@ -16,7 +16,7 @@
 #include <stdio.h>
 
 
-node *newnode(node n)
+node *newnode(node n) 
 {
    node *p = malloc(sizeof(node));
    check_pointer(p);
@@ -24,7 +24,86 @@ node *newnode(node n)
    return p;
 }
 
+nVal evaluate_node(const node *n)
+{
+   nVal leftValue;
+   nVal rightValue;
 
+   switch (n->kind) {
+      case kNum: return n->e.number.value;
+      case kSum: case kDiff: case kMult: case kDiv:
+         leftValue = evaluate_node(n->e.binary.left);
+         rightValue = evaluate_node(n->e.binary.right);
+      switch (n->kind) {
+         case kSum: return leftValue + rightValue;
+         case kDiff: return leftValue - rightValue;
+         case kMult: return leftValue * rightValue;
+         case kDiv: 
+            if (rightValue == 0) // catch epsilon
+               perror("division by zero");
+            return leftValue / rightValue;
+      }
+      default: perror("internal error: illegal expression kind");        
+  }  
+}
+
+
+
+void print_node(node *ptr) 
+{
+   node n = *ptr;
+   switch (n.kind) {
+      case kNum:
+         double v = n.e.number.value;
+         printf("kind: var ");
+         printf("value: %lf\n", v);
+         break;
+      
+      case kSum: case kDiff: case kMult: case kDiv:
+         node *left = n.e.binary.left;
+         node *right = n.e.binary.right;
+         printf("kind: binary\n");
+         print_node(left);
+         print_node(right);
+         break;
+      
+      case kSym:
+         printf("kind: symbol");
+         // getsym()
+         break;
+
+      default:
+         break;
+   }
+}
+
+
+
+
+symrec *putsymlist (symrec *list, char *name, int sym_type) 
+{
+   symrec *res = (symrec*) malloc (sizeof(symrec));
+   check_pointer(res);
+
+   res->name = strdup(name);
+   res->type = 0;
+   res->value.f = 0;
+   res->next = list;
+   list = res;
+   return res;
+}
+
+symrec *addtolist(symrec *prev, char *name, int sym_type)  
+{
+   symrec *res = (symrec *) malloc (sizeof(symrec));
+   check_pointer(res);
+
+   res->name = strdup(name);
+   res->type = 0;
+   res->value.f = 0;
+   res->next = prev;
+   return res;
+}
 
 
 int print_list(symrec *start) {
@@ -33,15 +112,12 @@ int print_list(symrec *start) {
    }
 }
 
+int free_list(symrec *start) {
+   for (symrec *p = start; p; p = p->next) {
+      free(p);
+   }
+}
 
-// symrec *putsym (symrec *list, char const *name, int sym_type)
-// {
-//    symrec *res = (symrec *) malloc (sizeof (symrec));
-//    check_pointer(res);
-   
-//    res->name = strdup (name);
-//    res->type = sym_type;
-// }
 
 // symrec *putsym (char const *name, int sym_type)
 // {
@@ -51,8 +127,6 @@ int print_list(symrec *start) {
 // 	res->name = strdup (name);
 // 	res->type = sym_type;
 // 	res->value.f = 0; /* Set value to 0 even if fun. */
-// 	// it's a union dummy
-
 // 	res->next = sym_table;
 // 	sym_table = res;
 // 	return res;

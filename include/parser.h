@@ -45,10 +45,10 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 19 "parser.y"
+#line 21 "parser.y"
 
-  #include <stdio.h>
   #include <sym.h>
+  #include <stack.h>
 
 #line 54 "include/parser.h"
 
@@ -83,16 +83,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 24 "parser.y"
+#line 26 "parser.y"
 
   int ival;
   double fval;
   char sval[100];
   
-  symrec*   sympointer;
-  void*     none;
+  symrec* sympointer;
+  node* exprpointer;
+  void* none;
 
-#line 96 "include/parser.h"
+#line 97 "include/parser.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -6,13 +6,12 @@
 #include "parser.h"
 #include "lexer.h"
 
-//#include "include/stack.h"
-
-
 //symbol table
-#include "include/sym.h"
+#include "sym.h"
 symrec *globals;
 
+#include "stack.h"
+stack *call_stack;
 
 int yyparse(yyscan_t scanner);
 int compile(const char *source) {
@@ -37,8 +36,9 @@ void catfile(char* destination, int size, char *filename) {
 	FILE *f = fopen(filename, "r");
     if (f == NULL) perror("file not found");
 	char line[100];
-	while (fgets(line, 100, f)) 
+	while (fgets(line, 100, f)) {
         strcat(destination, line);
+    }
     fclose(f);
 }
 
@@ -46,12 +46,17 @@ int main(int argc, char** argv) {
     // ++argv;
     // --argc;
 
+    call_stack = new_stack();
+
     char file[800];
     catfile(file, 800, "./test/test.txt");
     int code = compile(file);
-    return code;
 
-    // make a stack for the call stack
-    // stack* call = new_stack();
-    // return 0;
+    // while (!empty(call_stack)) {
+    //     T call = pop(call_stack);
+    //     printf("call name: %s\n", call.name);
+    // }
+
+
+    return code;
 }

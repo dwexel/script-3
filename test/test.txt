@@ -1,6 +1,7 @@
 
-fn hamwith(one) 
-	10
-end
+fn hamwith(one, two, three) 
+	(1 + 2) + 3
 
-hamwith(thereere, fjdjaklk)
+end 
+
+hamwith(thes, joy)

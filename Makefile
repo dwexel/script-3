@@ -5,7 +5,7 @@ FLEX = win_flex
 BISON = win_bison
 
 CC = gcc
-CFLAGS = -I"C:\Users\dexte\Documents\GitHub\c-notes\script 3\include"
+CFLAGS = -I"C:\Users\dexte\Documents\GitHub\script-3\include"
 HEADERS = include
 
 build/main: $(OBJS)

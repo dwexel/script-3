@@ -10,6 +10,8 @@
   {
     fprintf(stderr, "Error: %s\n", msg);
   }
+
+  // #define error
 %}
 
 %define api.pure
@@ -17,8 +19,8 @@
 %parse-param { void* scanner }
 
 %code requires {
-  #include <stdio.h>
   #include <sym.h>
+  #include <stack.h>
 }
 
 %union {
@@ -26,8 +28,9 @@
   double fval;
   char sval[100];
   
-  symrec*   sympointer;
-  void*     none;
+  symrec* sympointer;
+  node* exprpointer;
+  void* none;
 }
 
 %token TOKEN_LPAREN   "("
@@ -50,10 +53,14 @@
 %type <none> input
 %type <none> line
 
-%type <fval> expr
+
+
+%type <exprpointer> expr
 %type <fval> number
 
-%type <sympointer> def
+%type <none> def
+%type <none> call
+
 %type <sympointer> params
 
 %left "+"
@@ -63,7 +70,7 @@
 
 start:
   input                     {
-                              // if (yychar == YYEOF) printf("input parsed\n"); 
+                              if (yychar == YYEOF) printf("input parsed\n"); 
                             }
 
 input:
@@ -73,61 +80,76 @@ line:
   call                      {
                               $$ = NULL;
                             }
-  | def                     { $$ = NULL; }
+  | def                     { 
+                              $$ = NULL; 
+                            }
 
 
 call:
   "ID" "(" params ")"         { 
                                 printf("call parsed, args:\n");
                                 print_list($3);
+                                
+                                if (strlen($1) >= 100)
+                                  perror("name too long");
+                                
+                                T call;
+                                strcpy(call.name, $1);
+                                push(call_stack, call);
                               }
-
-
-
-
 
 def:
   "fn" "ID" "(" params ")" expr "end"     {
-                                            printf("def parsed, params:\n");
-                                            print_list($4);
+                                            // printf("def parsed, params:\n");
+                                            // print_list($4);
+                                            // putsymlist(globals, $2, 0);
+                                            // print_node($6);
 
-                                            symrec *new = (symrec *) malloc (sizeof (symrec));
-                                            new->name = strdup($2);
-                                            new->type = SYM_FUNCTION;
-                                            new->value.f = 0;
-                                            new->next = globals;
-                                            globals = new;
+                                            printf("test evaluation:\n");
+                                            printf("%lf\n", evaluate_node($6));
 
-                                            // don't return
-                                            $$ = (symrec *)0;
+                                            $$ = (symrec*)0;
                                           }
 
 params:
-                            {
-                              $$ = NULL; 
-                            }
-  | "ID"                    {
-                              symrec *new = (symrec *) malloc (sizeof (symrec));
-                              new->name = strdup($1);
-                              new->next = NULL;
-                              $$ = new;
-                            }
-  | params "," "ID"         {
-                              symrec *new = (symrec *) malloc (sizeof (symrec));
-                              new->name = strdup($3);
-                              new->next = $1;
-                              $$ = new;
-                            }
+                            { $$ = NULL;                   }
+  | "ID"                    { $$ = addtolist(NULL, $1, 0); }
+  | params "," "ID"         { $$ = addtolist($1, $3, 0);   }
 
 expr:
-  number                    { $$ = $1;      }
-  | expr "-" expr           { $$ = $1 - $3; }
-  | expr "+" expr           { $$ = $1 + $3; } 
-  | expr "/" expr           { $$ = $1 / $3; }
-  | expr "*" expr           { $$ = $1 * $3; }
-  | "(" expr ")"            { $$ = $2;      }
-  | "ID"                    { 
-                              printf("identifier: %s\n", $1);
+  number                    {
+                              double n = $1;
+                              $$ = newnode((node){kNum,  {n}}); 
+                            }
+  | expr "-" expr           {
+                              node *left = $1;
+                              node *right = $3;
+
+                              //printf("left: %lf\n", left->e.number.value);
+                              //printf("right: %lf\n", right->e.number.value);
+
+                              $$ = newnode((node) {kDiff, {.binary = {left, right}}});  
+                            }
+  | expr "+" expr           { 
+                              node *left = $1; 
+                              node *right = $3;
+                              $$ = newnode((node) {kSum, {.binary = {left, right}}});  
+                            } 
+  | expr "/" expr           { 
+                              node *left = $1; 
+                              node *right = $3;
+                              $$ = newnode((node) {kDiv, {.binary = {left, right}}});  
+                            }
+  | expr "*" expr           { 
+                              node *left = $1; 
+                              node *right = $3;
+                              $$ = newnode((node) {kMult, {.binary = {left, right}}});  
+                            }
+  | "(" expr ")"            { 
+                              $$ = $2; 
+                            }
+  | "ID"                    {
+                              $$ = newnode((node){kSym, {.symbol = {strdup($1)}}});
                             }
 
 number:
