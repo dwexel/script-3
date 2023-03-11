@@ -6,12 +6,16 @@
 #include "parser.h"
 #include "lexer.h"
 
-//symbol table
-#include "sym.h"
-symrec *globals;
 
-#include "stack.h"
-stack *call_stack;
+// my types
+#include "sym.h"
+
+
+// symrec *globals;
+
+// #include "stack.h"
+// #include "deque.h"
+
 
 int yyparse(yyscan_t scanner);
 int compile(const char *source) {
@@ -46,16 +50,22 @@ int main(int argc, char** argv) {
     // ++argv;
     // --argc;
 
-    call_stack = new_stack();
+    // don't need this yet
+    // stack *call_stack = new_stack();
+
+    
 
     char file[800];
     catfile(file, 800, "./test/test.txt");
     int code = compile(file);
 
+
+
     // while (!empty(call_stack)) {
     //     T call = pop(call_stack);
     //     printf("call name: %s\n", call.name);
     // }
+
 
 
     return code;

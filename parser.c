@@ -69,21 +69,30 @@
 /* First part of user prologue.  */
 #line 1 "parser.y"
 
+  #include <math.h>
   #include <stdbool.h>
 
   // bridges
   #include <parser.h>
   #include <lexer.h>
-  #include <math.h>
+
+
+  // #include <deque.h>
+  // #include <stack.h>
+  
+  #include <sym.h>
+  symrec *defs;
+
+
+  
 
   void yyerror(yyscan_t scanner, const char *msg) 
   {
     fprintf(stderr, "Error: %s\n", msg);
   }
 
-  // #define error
 
-#line 87 "parser.c"
+#line 96 "parser.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -506,9 +515,9 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    72,    72,    76,    77,    80,    83,    89,   102,   115,
-     116,   117,   120,   124,   133,   138,   143,   148,   151,   156,
-     157
+       0,    82,    82,    90,    91,    94,    95,    99,   113,   120,
+     121,   122,   125,   129,   134,   139,   144,   149,   152,   157,
+     158
 };
 #endif
 
@@ -1110,104 +1119,95 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* start: input  */
-#line 72 "parser.y"
+#line 82 "parser.y"
                             {
-                              if (yychar == YYEOF) printf("input parsed\n"); 
+                              if (yychar == YYEOF) {
+                                //printf("input parsed\n"); 
+                                //printf("defs: \n");
+                                //print_list(defs);
+                              }
                             }
-#line 1118 "parser.c"
+#line 1131 "parser.c"
     break;
 
   case 5: /* line: call  */
-#line 80 "parser.y"
-                            {
-                              (yyval.none) = NULL;
-                            }
-#line 1126 "parser.c"
+#line 94 "parser.y"
+                            { }
+#line 1137 "parser.c"
     break;
 
   case 6: /* line: def  */
-#line 83 "parser.y"
-                            { 
-                              (yyval.none) = NULL; 
-                            }
-#line 1134 "parser.c"
+#line 95 "parser.y"
+                            { }
+#line 1143 "parser.c"
     break;
 
   case 7: /* call: "ID" "(" params ")"  */
-#line 89 "parser.y"
-                              { 
-                                printf("call parsed, args:\n");
-                                print_list((yyvsp[-1].sympointer));
-                                
-                                if (strlen((yyvsp[-3].sval)) >= 100)
-                                  perror("name too long");
-                                
-                                T call;
-                                strcpy(call.name, (yyvsp[-3].sval));
-                                push(call_stack, call);
+#line 99 "parser.y"
+                              {
+                                // printf("call parsed, args:\n");
+                                // print_list($3);
+
+                                symrec *def = getfromlist(defs, (yyvsp[-3].sval));
+                                if (def) {
+                                  printf("function exists\n\n");
+                                  print_node(def->value.exprpointer);
+                                  printf("value: \t%lf\n", evaluate_node(def->value.exprpointer));
+                                  
+                                }
                               }
-#line 1150 "parser.c"
+#line 1160 "parser.c"
     break;
 
   case 8: /* def: "fn" "ID" "(" params ")" expr "end"  */
-#line 102 "parser.y"
+#line 113 "parser.y"
                                           {
-                                            // printf("def parsed, params:\n");
-                                            // print_list($4);
-                                            // putsymlist(globals, $2, 0);
-                                            // print_node($6);
 
-                                            printf("test evaluation:\n");
-                                            printf("%lf\n", evaluate_node((yyvsp[-1].exprpointer)));
-
-                                            (yyval.none) = (symrec*)0;
+                                            defs = addtolist(defs, (yyvsp[-5].sval), SYM_DEF);
+                                            defs->value.exprpointer = (yyvsp[-1].exprpointer);
                                           }
-#line 1166 "parser.c"
+#line 1170 "parser.c"
     break;
 
   case 9: /* params: %empty  */
-#line 115 "parser.y"
+#line 120 "parser.y"
                             { (yyval.sympointer) = NULL;                   }
-#line 1172 "parser.c"
+#line 1176 "parser.c"
     break;
 
   case 10: /* params: "ID"  */
-#line 116 "parser.y"
-                            { (yyval.sympointer) = addtolist(NULL, (yyvsp[0].sval), 0); }
-#line 1178 "parser.c"
+#line 121 "parser.y"
+                            { (yyval.sympointer) = addtolist(NULL, (yyvsp[0].sval), SYM_PARAM); }
+#line 1182 "parser.c"
     break;
 
   case 11: /* params: params "," "ID"  */
-#line 117 "parser.y"
-                            { (yyval.sympointer) = addtolist((yyvsp[-2].sympointer), (yyvsp[0].sval), 0);   }
-#line 1184 "parser.c"
+#line 122 "parser.y"
+                            { (yyval.sympointer) = addtolist((yyvsp[-2].sympointer), (yyvsp[0].sval), SYM_PARAM);   }
+#line 1188 "parser.c"
     break;
 
   case 12: /* expr: number  */
-#line 120 "parser.y"
+#line 125 "parser.y"
                             {
                               double n = (yyvsp[0].fval);
                               (yyval.exprpointer) = newnode((node){kNum,  {n}}); 
                             }
-#line 1193 "parser.c"
+#line 1197 "parser.c"
     break;
 
   case 13: /* expr: expr "-" expr  */
-#line 124 "parser.y"
+#line 129 "parser.y"
                             {
                               node *left = (yyvsp[-2].exprpointer);
                               node *right = (yyvsp[0].exprpointer);
-
-                              //printf("left: %lf\n", left->e.number.value);
-                              //printf("right: %lf\n", right->e.number.value);
-
                               (yyval.exprpointer) = newnode((node) {kDiff, {.binary = {left, right}}});  
                             }
 #line 1207 "parser.c"
     break;
 
   case 14: /* expr: expr "+" expr  */
-#line 133 "parser.y"
+#line 134 "parser.y"
                             { 
                               node *left = (yyvsp[-2].exprpointer); 
                               node *right = (yyvsp[0].exprpointer);
@@ -1217,7 +1217,7 @@ yyreduce:
     break;
 
   case 15: /* expr: expr "/" expr  */
-#line 138 "parser.y"
+#line 139 "parser.y"
                             { 
                               node *left = (yyvsp[-2].exprpointer); 
                               node *right = (yyvsp[0].exprpointer);
@@ -1227,7 +1227,7 @@ yyreduce:
     break;
 
   case 16: /* expr: expr "*" expr  */
-#line 143 "parser.y"
+#line 144 "parser.y"
                             { 
                               node *left = (yyvsp[-2].exprpointer); 
                               node *right = (yyvsp[0].exprpointer);
@@ -1237,7 +1237,7 @@ yyreduce:
     break;
 
   case 17: /* expr: "(" expr ")"  */
-#line 148 "parser.y"
+#line 149 "parser.y"
                             { 
                               (yyval.exprpointer) = (yyvsp[-1].exprpointer); 
                             }
@@ -1245,7 +1245,7 @@ yyreduce:
     break;
 
   case 18: /* expr: "ID"  */
-#line 151 "parser.y"
+#line 152 "parser.y"
                             {
                               (yyval.exprpointer) = newnode((node){kSym, {.symbol = {strdup((yyvsp[0].sval))}}});
                             }
@@ -1253,13 +1253,13 @@ yyreduce:
     break;
 
   case 19: /* number: "INTEGER"  */
-#line 156 "parser.y"
+#line 157 "parser.y"
                             { (yyval.fval) = (double) (yyvsp[0].ival); }
 #line 1259 "parser.c"
     break;
 
   case 20: /* number: "DECIMAL"  */
-#line 157 "parser.y"
+#line 158 "parser.y"
                             { (yyval.fval) = (yyvsp[0].fval);          }
 #line 1265 "parser.c"
     break;

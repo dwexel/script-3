@@ -1,7 +1,11 @@
 
-fn hamwith(one, two, three) 
+fn hamwith() 
 	(1 + 2) + 3
 
-end 
+end
 
-hamwith(thes, joy)
+fn joy()
+	1
+end
+
+hamwith()

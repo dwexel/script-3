@@ -17,7 +17,7 @@ void destroy(stack *s);
 void compress(stack *s);
 
 
-extern stack* call_stack;
+// extern stack* call_stack;
 
 
 

@@ -1,7 +1,7 @@
 #ifndef _SYM_H
 #define _SYM_H
 
-// nodes
+// nodes for expressions
 
 typedef struct _node node;
 typedef double nVal;
@@ -35,13 +35,21 @@ nVal evaluate_node(const node *n);
 // 	} v;
 // };
 
+#define SYM_DEF 1
+#define SYM_CALL 2
+#define SYM_PARAM 3
+
+
 typedef struct symrec symrec;
+
 struct symrec {
 	char *name;
 	int type;
 	union	{
 		double f;
 		char *c;
+
+		node *exprpointer;
 	} value;
 	struct symrec *next;
 };
@@ -51,14 +59,27 @@ struct symrec {
 // void putsym
 // void newsym
 
-symrec *putsymlist (symrec *list, char *name, int sym_type);
+// symrec *putsymlist (symrec *list, char *name, int sym_type);
 
-symrec *addtolist(symrec *prev, char *name, int sym_type);
+symrec *addtolist(symrec *prev, const char *name, int sym_type);
+symrec *getfromlist(symrec *start, const char *name);
+
+
 
 int print_list(symrec *start);
 
-extern symrec *globals;
 
+
+
+// struct call {
+// 	char *name;
+// 	symrec *args;
+// };
+
+// struct def {
+// 	char *name;
+// 	symrec *params;
+// };
 
 
 

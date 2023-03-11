@@ -34,6 +34,9 @@ nVal evaluate_node(const node *n)
       case kSum: case kDiff: case kMult: case kDiv:
          leftValue = evaluate_node(n->e.binary.left);
          rightValue = evaluate_node(n->e.binary.right);
+
+         printf("%lf, %lf\n", leftValue, rightValue);
+
       switch (n->kind) {
          case kSum: return leftValue + rightValue;
          case kDiff: return leftValue - rightValue;
@@ -54,7 +57,7 @@ void print_node(node *ptr)
    node n = *ptr;
    switch (n.kind) {
       case kNum:
-         double v = n.e.number.value;
+         nVal v = n.e.number.value;
          printf("kind: var ");
          printf("value: %lf\n", v);
          break;
@@ -80,35 +83,49 @@ void print_node(node *ptr)
 
 
 
-symrec *putsymlist (symrec *list, char *name, int sym_type) 
-{
-   symrec *res = (symrec*) malloc (sizeof(symrec));
-   check_pointer(res);
+// symrec *putsymlist (symrec *list, char *name, int sym_type) 
+// {
+//    printf("name: %s\n", name);
+//    symrec *res = (symrec*) malloc (sizeof(symrec));
+//    check_pointer(res);
+//    res->name = strdup(name);
+//    res->type = 0;
+//    res->value.f = 0;
+//    res->next = list;
+//    list = res;
+//    return res;
+// }
 
-   res->name = strdup(name);
-   res->type = 0;
-   res->value.f = 0;
-   res->next = list;
-   list = res;
-   return res;
-}
-
-symrec *addtolist(symrec *prev, char *name, int sym_type)  
+symrec *addtolist(symrec *prev, const char *name, int sym_type)  
 {
    symrec *res = (symrec *) malloc (sizeof(symrec));
    check_pointer(res);
-
    res->name = strdup(name);
-   res->type = 0;
+   res->type = sym_type;
    res->value.f = 0;
    res->next = prev;
    return res;
 }
 
+symrec *getfromlist(symrec *start, const char *name)
+{
+   for (symrec *p = start; p; p = p->next)
+		if (strcmp (p->name, name) == 0)
+      	return p;
+   
+	return NULL;
+}
 
 int print_list(symrec *start) {
 	for (symrec *p = start; p; p = p->next) {
-   	printf("%p\t%s\t%d\n", p, p->name, p->type);
+     	printf("%p\t%s\t", p, p->name);
+
+      switch (p->type) {
+         case SYM_DEF:
+            printf("type SYM_DEF\n");
+            break;
+         default: break;
+      }
    }
 }
 
@@ -153,3 +170,8 @@ int free_list(symrec *start) {
 
 
 // reusable linked lists
+
+
+// struct call *new_call()
+// {
+// }

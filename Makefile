@@ -1,4 +1,6 @@
-FILES = lexer.c parser.c main.c sym.c stack.c
+
+FILES = lexer.c parser.c main.c sym.c
+
 OBJS = $(FILES:%.c=obj/%.o)
 
 FLEX = win_flex
@@ -24,3 +26,7 @@ parser.c parser.h: parser.y lexer.c
 clean:
 # rm -f *.o *~ lexer.c lexer.h parser.c parser.h main
 	del lexer.c parser.c
+
+cleanobj:
+	rmdir /s /q ".\obj"
+	mkdir ".\obj"
