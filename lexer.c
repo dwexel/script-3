@@ -449,10 +449,11 @@ static const flex_int16_t yy_chk[57] =
   #include <stdio.h>
   #include <math.h>
   #include <string.h>
-  // headers
+
+  // bridge headers
   #include <parser.h>
-#line 454 "lexer.c"
 #line 455 "lexer.c"
+#line 456 "lexer.c"
 
 #define INITIAL 0
 
@@ -718,10 +719,10 @@ YY_DECL
 		}
 
 	{
-#line 14 "Lexer.l"
+#line 15 "Lexer.l"
 
 
-#line 724 "lexer.c"
+#line 725 "lexer.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -781,12 +782,12 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 16 "Lexer.l"
+#line 17 "Lexer.l"
 { continue; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 17 "Lexer.l"
+#line 18 "Lexer.l"
 { 
                         yylval->ival = atoi(yytext);
                         return TOKEN_INTEGER;
@@ -794,7 +795,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 22 "Lexer.l"
+#line 23 "Lexer.l"
 {
                         yylval->fval = atof(yytext);
                         return TOKEN_DECIMAL;
@@ -802,82 +803,80 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 27 "Lexer.l"
+#line 28 "Lexer.l"
 { return TOKEN_KEYWORD_FN;  }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 28 "Lexer.l"
+#line 29 "Lexer.l"
 { return TOKEN_KEYWORD_END; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 30 "Lexer.l"
+#line 31 "Lexer.l"
 {
-              // yylval->sval = yytext;
               strcpy(yylval->sval, yytext);
-              // printf("identifier: %s\n", yylval->sval);
               return TOKEN_ID;
             }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 37 "Lexer.l"
+#line 36 "Lexer.l"
 { return TOKEN_PLUS;   }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 38 "Lexer.l"
+#line 37 "Lexer.l"
 { return TOKEN_STAR;   }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 39 "Lexer.l"
+#line 38 "Lexer.l"
 { return TOKEN_HYPH;   }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 40 "Lexer.l"
+#line 39 "Lexer.l"
 { return TOKEN_FSLASH; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 42 "Lexer.l"
+#line 41 "Lexer.l"
 { return TOKEN_LPAREN; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 43 "Lexer.l"
+#line 42 "Lexer.l"
 { return TOKEN_RPAREN; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 44 "Lexer.l"
+#line 43 "Lexer.l"
 { return TOKEN_LBRACE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 45 "Lexer.l"
+#line 44 "Lexer.l"
 { return TOKEN_RBRACE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 47 "Lexer.l"
+#line 46 "Lexer.l"
 { return TOKEN_COMMA;  }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 51 "Lexer.l"
+#line 50 "Lexer.l"
 {
               printf("unrecognized character: %s\n", yytext);
             }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 54 "Lexer.l"
+#line 53 "Lexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 880 "lexer.c"
+#line 879 "lexer.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2058,4 +2057,4 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 54 "Lexer.l"
+#line 53 "Lexer.l"

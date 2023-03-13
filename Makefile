@@ -1,5 +1,5 @@
 
-FILES = lexer.c parser.c main.c sym.c
+FILES = lexer.c parser.c main.c symstack.c
 
 OBJS = $(FILES:%.c=obj/%.o)
 

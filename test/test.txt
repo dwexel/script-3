@@ -1,11 +1,6 @@
 
-fn hamwith() 
-	(1 + 2) + 3
-
+fn ham(x, y, zs) 
+	x + y + zs
 end
 
-fn joy()
-	1
-end
-
-hamwith()
+ham(1, 2, 3)

@@ -8,7 +8,7 @@
 
 
 // my types
-#include "sym.h"
+#include "symstack.h"
 
 
 // symrec *globals;
@@ -50,22 +50,31 @@ int main(int argc, char** argv) {
     // ++argv;
     // --argc;
 
-    // don't need this yet
-    // stack *call_stack = new_stack();
+    // printf("running...\n\n");
+    // call_stack = new_stack();
 
-    
+
+    // symrec test;
+    // test.name = "start";
+    // test.value.f = 0.0;
+    // test.next = NULL;
+    // addtolist_end(&test, "heelo");
+    // addtolist_end(&test, "hi");
+    // print_list(&test);
+
+    // symrec *test = addtolist(NULL, "start", 0);
+    // addtolist_end(test, "heelo");
+    // addtolist_end(test, "hi");
+    // print_list(test);
+
+
 
     char file[800];
     catfile(file, 800, "./test/test.txt");
     int code = compile(file);
 
 
-
-    // while (!empty(call_stack)) {
-    //     T call = pop(call_stack);
-    //     printf("call name: %s\n", call.name);
-    // }
-
+    // print_stack();
 
 
     return code;

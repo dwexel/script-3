@@ -76,15 +76,8 @@
   #include <parser.h>
   #include <lexer.h>
 
-
-  // #include <deque.h>
-  // #include <stack.h>
-  
-  #include <sym.h>
+  // global symbol table
   symrec *defs;
-
-
-  
 
   void yyerror(yyscan_t scanner, const char *msg) 
   {
@@ -92,7 +85,7 @@
   }
 
 
-#line 96 "parser.c"
+#line 89 "parser.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -144,8 +137,9 @@ enum yysymbol_kind_t
   YYSYMBOL_call = 21,                      /* call  */
   YYSYMBOL_def = 22,                       /* def  */
   YYSYMBOL_params = 23,                    /* params  */
-  YYSYMBOL_expr = 24,                      /* expr  */
-  YYSYMBOL_number = 25                     /* number  */
+  YYSYMBOL_args = 24,                      /* args  */
+  YYSYMBOL_expr = 25,                      /* expr  */
+  YYSYMBOL_number = 26                     /* number  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -455,16 +449,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   41
+#define YYLAST   44
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  17
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  9
+#define YYNNTS  10
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  20
+#define YYNRULES  24
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  36
+#define YYNSTATES  40
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   271
@@ -515,9 +509,9 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    82,    82,    90,    91,    94,    95,    99,   113,   120,
-     121,   122,   125,   129,   134,   139,   144,   149,   152,   157,
-     158
+       0,    74,    74,    80,    81,    84,    85,    88,   118,   137,
+     138,   141,   147,   148,   151,   160,   164,   169,   174,   179,
+     184,   187,   190,   196,   197
 };
 #endif
 
@@ -536,7 +530,7 @@ static const char *const yytname[] =
   "\"end of file\"", "error", "\"invalid token\"", "\"(\"", "\")\"",
   "\"+\"", "\"*\"", "\"-\"", "\"/\"", "\"{\"", "\"}\"", "\",\"", "\"fn\"",
   "\"end\"", "\"INTEGER\"", "\"DECIMAL\"", "\"ID\"", "$accept", "start",
-  "input", "line", "call", "def", "params", "expr", "number", YY_NULLPTR
+  "input", "line", "call", "def", "params", "args", "expr", "number", YY_NULLPTR
 };
 
 static const char *
@@ -556,7 +550,7 @@ static const yytype_int16 yytoknum[] =
 };
 #endif
 
-#define YYPACT_NINF (-13)
+#define YYPACT_NINF (-17)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -570,10 +564,10 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -13,     5,    -6,   -13,    -8,    33,   -13,   -13,   -13,    34,
-      23,    23,   -13,    14,    15,   -13,    24,    -3,   -13,    -3,
-     -13,   -13,   -13,    -4,   -13,    16,    -3,    -3,    -3,    -3,
-     -13,   -13,    25,    27,    22,    22
+     -17,     3,    -8,   -17,   -11,    38,   -17,   -17,   -17,    39,
+      25,   -10,   -17,   -17,    -2,   -17,   -17,    18,   -17,    25,
+      -3,    27,   -17,    -3,    38,   -17,    13,   -17,   -17,    26,
+      -3,    -3,    -3,    -3,   -17,   -17,    17,    20,    30,    30
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -582,21 +576,21 @@ static const yytype_int8 yypact[] =
 static const yytype_int8 yydefact[] =
 {
        3,     0,     2,     1,     0,     0,     4,     5,     6,     0,
-       9,     9,    10,     0,     0,     7,     0,     0,    11,     0,
-      19,    20,    18,     0,    12,     0,     0,     0,     0,     0,
-       8,    17,    14,    16,    13,    15
+      12,     9,    23,    24,     0,    13,    10,     0,     7,     0,
+       0,     0,    14,     0,    21,    22,     0,    15,    11,     0,
+       0,     0,     0,     0,     8,    20,    17,    19,    16,    18
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -13,   -13,   -13,   -13,   -13,   -13,    30,   -12,   -13
+     -17,   -17,   -17,   -17,    42,   -17,   -17,   -17,   -16,    -9
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     2,     6,     7,     8,    13,    23,    24
+      -1,     1,     2,     6,    25,     8,    17,    14,    26,    27
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -604,20 +598,20 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      19,    26,    27,    28,    29,     3,     4,    25,     9,    30,
-       5,    20,    21,    22,    32,    33,    34,    35,    15,    17,
-      31,    26,    27,    28,    29,    16,    16,    26,    27,    28,
-      29,    27,    28,    29,    28,    29,    10,    11,     0,    12,
-      18,    14
+      23,    15,    18,     3,     4,     9,    16,    29,     5,    19,
+      22,    12,    13,    24,    36,    37,    38,    39,    30,    31,
+      32,    33,    20,    31,    32,    33,    34,    32,    33,    21,
+      35,    30,    31,    32,    33,    30,    31,    32,    33,    12,
+      13,    10,    11,    28,     7
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     5,     6,     7,     8,     0,    12,    19,    16,    13,
-      16,    14,    15,    16,    26,    27,    28,    29,     4,     4,
-       4,     5,     6,     7,     8,    11,    11,     5,     6,     7,
-       8,     6,     7,     8,     7,     8,     3,     3,    -1,    16,
-      16,    11
+       3,    10,     4,     0,    12,    16,    16,    23,    16,    11,
+      19,    14,    15,    16,    30,    31,    32,    33,     5,     6,
+       7,     8,     4,     6,     7,     8,    13,     7,     8,    11,
+       4,     5,     6,     7,     8,     5,     6,     7,     8,    14,
+      15,     3,     3,    16,     2
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -625,25 +619,25 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,    18,    19,     0,    12,    16,    20,    21,    22,    16,
-       3,     3,    16,    23,    23,     4,    11,     4,    16,     3,
-      14,    15,    16,    24,    25,    24,     5,     6,     7,     8,
-      13,     4,    24,    24,    24,    24
+       3,     3,    14,    15,    24,    26,    16,    23,     4,    11,
+       4,    11,    26,     3,    16,    21,    25,    26,    16,    25,
+       5,     6,     7,     8,    13,     4,    25,    25,    25,    25
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int8 yyr1[] =
 {
        0,    17,    18,    19,    19,    20,    20,    21,    22,    23,
-      23,    23,    24,    24,    24,    24,    24,    24,    24,    25,
-      25
+      23,    23,    24,    24,    24,    25,    25,    25,    25,    25,
+      25,    25,    25,    26,    26
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     0,     2,     1,     1,     4,     7,     0,
-       1,     3,     1,     3,     3,     3,     3,     3,     1,     1,
-       1
+       1,     3,     0,     1,     3,     1,     3,     3,     3,     3,
+       3,     1,     1,     1,     1
 };
 
 
@@ -1119,153 +1113,216 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* start: input  */
-#line 82 "parser.y"
+#line 74 "parser.y"
                             {
-                              if (yychar == YYEOF) {
-                                //printf("input parsed\n"); 
-                                //printf("defs: \n");
-                                //print_list(defs);
+                              if (yychar == YYEOF) 
+                              {
                               }
                             }
-#line 1131 "parser.c"
+#line 1123 "parser.c"
     break;
 
   case 5: /* line: call  */
-#line 94 "parser.y"
+#line 84 "parser.y"
                             { }
-#line 1137 "parser.c"
+#line 1129 "parser.c"
     break;
 
   case 6: /* line: def  */
-#line 95 "parser.y"
+#line 85 "parser.y"
                             { }
-#line 1143 "parser.c"
+#line 1135 "parser.c"
     break;
 
-  case 7: /* call: "ID" "(" params ")"  */
-#line 99 "parser.y"
-                              {
-                                // printf("call parsed, args:\n");
-                                // print_list($3);
+  case 7: /* call: "ID" "(" args ")"  */
+#line 88 "parser.y"
+                            {
+                              symrec *funcsym = getfromlist(defs, (yyvsp[-3].sval));                              
 
-                                symrec *def = getfromlist(defs, (yyvsp[-3].sval));
-                                if (def) {
-                                  printf("function exists\n\n");
-                                  print_node(def->value.exprpointer);
-                                  printf("value: \t%lf\n", evaluate_node(def->value.exprpointer));
-                                  
+                              if (funcsym) {
+                                symrec *params = funcsym->value.fn->params;
+                                numrec *args = (yyvsp[-1].numrec_ptr);
+
+                                if (!params) {
+                                  puts("no params");
                                 }
+                                if (!args) {
+                                  puts("no args");
+                                }
+
+                                if (params && args) {
+                                  puts("params and args");
+                                  fill(params, args);
+                                  print_list(params);
+                                }
+                                node *expr = funcsym->value.fn->expr;
+                                print_node(expr);
+
+                                printf("evaluation: \n%lf\n", evaluate_node_wsym(funcsym->value.fn->expr, params));
                               }
-#line 1160 "parser.c"
+                              else {
+                                printf("attempt to call nonexistent function: %s", (yyvsp[-3].sval));
+                              }
+                            }
+#line 1168 "parser.c"
     break;
 
   case 8: /* def: "fn" "ID" "(" params ")" expr "end"  */
-#line 113 "parser.y"
+#line 118 "parser.y"
                                           {
+                                            // create
+                                            struct def *fn = malloc(sizeof(struct def));
+                                            fn->params = (yyvsp[-3].symrec_ptr);
+                                            fn->expr = (yyvsp[-1].expr_ptr);
 
-                                            defs = addtolist(defs, (yyvsp[-5].sval), SYM_DEF);
-                                            defs->value.exprpointer = (yyvsp[-1].exprpointer);
+                                            // add to list
+                                            defs = addtolist(defs, (yyvsp[-5].sval), 0);
+                                            defs->value.fn = fn;
+                                            
+                                            if (semantic_verify((yyvsp[-1].expr_ptr), (yyvsp[-3].symrec_ptr))) {
+                                              printf("semantic verified: %s\n\n", (yyvsp[-5].sval));
+                                            }
+                                            else {
+                                              printf("error, semantic error\n");
+                                            }
                                           }
-#line 1170 "parser.c"
+#line 1190 "parser.c"
     break;
 
   case 9: /* params: %empty  */
-#line 120 "parser.y"
-                            { (yyval.sympointer) = NULL;                   }
-#line 1176 "parser.c"
+#line 137 "parser.y"
+                              { (yyval.symrec_ptr) = NULL; }
+#line 1196 "parser.c"
     break;
 
   case 10: /* params: "ID"  */
-#line 121 "parser.y"
-                            { (yyval.sympointer) = addtolist(NULL, (yyvsp[0].sval), SYM_PARAM); }
-#line 1182 "parser.c"
+#line 138 "parser.y"
+                              {
+                                (yyval.symrec_ptr) = newlist((yyvsp[0].sval));
+                              }
+#line 1204 "parser.c"
     break;
 
   case 11: /* params: params "," "ID"  */
-#line 122 "parser.y"
-                            { (yyval.sympointer) = addtolist((yyvsp[-2].sympointer), (yyvsp[0].sval), SYM_PARAM);   }
-#line 1188 "parser.c"
+#line 141 "parser.y"
+                              {
+                                addtolist_end((yyvsp[-2].symrec_ptr), (yyvsp[0].sval));
+                                (yyval.symrec_ptr) = (yyvsp[-2].symrec_ptr);
+                              }
+#line 1213 "parser.c"
     break;
 
-  case 12: /* expr: number  */
-#line 125 "parser.y"
-                            {
-                              double n = (yyvsp[0].fval);
-                              (yyval.exprpointer) = newnode((node){kNum,  {n}}); 
-                            }
-#line 1197 "parser.c"
+  case 12: /* args: %empty  */
+#line 147 "parser.y"
+                              { (yyval.numrec_ptr) = NULL; }
+#line 1219 "parser.c"
     break;
 
-  case 13: /* expr: expr "-" expr  */
-#line 129 "parser.y"
-                            {
-                              node *left = (yyvsp[-2].exprpointer);
-                              node *right = (yyvsp[0].exprpointer);
-                              (yyval.exprpointer) = newnode((node) {kDiff, {.binary = {left, right}}});  
-                            }
-#line 1207 "parser.c"
-    break;
-
-  case 14: /* expr: expr "+" expr  */
-#line 134 "parser.y"
-                            { 
-                              node *left = (yyvsp[-2].exprpointer); 
-                              node *right = (yyvsp[0].exprpointer);
-                              (yyval.exprpointer) = newnode((node) {kSum, {.binary = {left, right}}});  
-                            }
-#line 1217 "parser.c"
-    break;
-
-  case 15: /* expr: expr "/" expr  */
-#line 139 "parser.y"
-                            { 
-                              node *left = (yyvsp[-2].exprpointer); 
-                              node *right = (yyvsp[0].exprpointer);
-                              (yyval.exprpointer) = newnode((node) {kDiv, {.binary = {left, right}}});  
-                            }
+  case 13: /* args: number  */
+#line 148 "parser.y"
+                              { 
+                                (yyval.numrec_ptr) = newlist_num((yyvsp[0].fval));
+                              }
 #line 1227 "parser.c"
     break;
 
-  case 16: /* expr: expr "*" expr  */
-#line 144 "parser.y"
-                            { 
-                              node *left = (yyvsp[-2].exprpointer); 
-                              node *right = (yyvsp[0].exprpointer);
-                              (yyval.exprpointer) = newnode((node) {kMult, {.binary = {left, right}}});  
-                            }
-#line 1237 "parser.c"
+  case 14: /* args: args "," number  */
+#line 151 "parser.y"
+                              {
+                                addtolist_end_num((yyvsp[-2].numrec_ptr), (yyvsp[0].fval));
+                                (yyval.numrec_ptr) = (yyvsp[-2].numrec_ptr);
+                              }
+#line 1236 "parser.c"
     break;
 
-  case 17: /* expr: "(" expr ")"  */
-#line 149 "parser.y"
-                            { 
-                              (yyval.exprpointer) = (yyvsp[-1].exprpointer); 
+  case 15: /* expr: number  */
+#line 160 "parser.y"
+                            {
+                              double n = (yyvsp[0].fval);
+                              (yyval.expr_ptr) = newnode((node) {kNum,  {n}}); 
                             }
 #line 1245 "parser.c"
     break;
 
-  case 18: /* expr: "ID"  */
-#line 152 "parser.y"
+  case 16: /* expr: expr "-" expr  */
+#line 164 "parser.y"
                             {
-                              (yyval.exprpointer) = newnode((node){kSym, {.symbol = {strdup((yyvsp[0].sval))}}});
+                              node *left = (yyvsp[-2].expr_ptr);
+                              node *right = (yyvsp[0].expr_ptr);
+                              (yyval.expr_ptr) = newnode((node) {kDiff, {.binary = {left, right}}});  
                             }
-#line 1253 "parser.c"
+#line 1255 "parser.c"
     break;
 
-  case 19: /* number: "INTEGER"  */
-#line 157 "parser.y"
-                            { (yyval.fval) = (double) (yyvsp[0].ival); }
-#line 1259 "parser.c"
-    break;
-
-  case 20: /* number: "DECIMAL"  */
-#line 158 "parser.y"
-                            { (yyval.fval) = (yyvsp[0].fval);          }
+  case 17: /* expr: expr "+" expr  */
+#line 169 "parser.y"
+                            { 
+                              node *left = (yyvsp[-2].expr_ptr); 
+                              node *right = (yyvsp[0].expr_ptr);
+                              (yyval.expr_ptr) = newnode((node) {kSum, {.binary = {left, right}}});  
+                            }
 #line 1265 "parser.c"
     break;
 
+  case 18: /* expr: expr "/" expr  */
+#line 174 "parser.y"
+                            { 
+                              node *left = (yyvsp[-2].expr_ptr);
+                              node *right = (yyvsp[0].expr_ptr);
+                              (yyval.expr_ptr) = newnode((node) {kDiv, {.binary = {left, right}}});  
+                            }
+#line 1275 "parser.c"
+    break;
 
-#line 1269 "parser.c"
+  case 19: /* expr: expr "*" expr  */
+#line 179 "parser.y"
+                            { 
+                              node *left = (yyvsp[-2].expr_ptr); 
+                              node *right = (yyvsp[0].expr_ptr);
+                              (yyval.expr_ptr) = newnode((node) {kMult, {.binary = {left, right}}});  
+                            }
+#line 1285 "parser.c"
+    break;
+
+  case 20: /* expr: "(" expr ")"  */
+#line 184 "parser.y"
+                            { 
+                              (yyval.expr_ptr) = (yyvsp[-1].expr_ptr);
+                            }
+#line 1293 "parser.c"
+    break;
+
+  case 21: /* expr: "ID"  */
+#line 187 "parser.y"
+                            {
+                              (yyval.expr_ptr) = newnode((node){kSym, {.symbol = {strdup((yyvsp[0].sval))}}});
+                            }
+#line 1301 "parser.c"
+    break;
+
+  case 22: /* expr: call  */
+#line 190 "parser.y"
+                            { 
+                              // IMPLEMENT LATER
+                              (yyval.expr_ptr) = 0;
+                            }
+#line 1310 "parser.c"
+    break;
+
+  case 23: /* number: "INTEGER"  */
+#line 196 "parser.y"
+                            { (yyval.fval) = (double) (yyvsp[0].ival); }
+#line 1316 "parser.c"
+    break;
+
+  case 24: /* number: "DECIMAL"  */
+#line 197 "parser.y"
+                            { (yyval.fval) = (yyvsp[0].fval);          }
+#line 1322 "parser.c"
+    break;
+
+
+#line 1326 "parser.c"
 
       default: break;
     }

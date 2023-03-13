@@ -1,8 +1,0 @@
-{
-	"files.associations": {
-		"sym.h": "c",
-		"stack.h": "c",
-		"parser.h": "c",
-		"deque.h": "c"
-	}
-}

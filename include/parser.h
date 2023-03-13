@@ -45,12 +45,11 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 30 "parser.y"
+#line 23 "parser.y"
 
-  #include <sym.h>
+  #include <symstack.h>
 
-
-#line 54 "include/parser.h"
+#line 53 "include/parser.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -83,14 +82,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 35 "parser.y"
+#line 27 "parser.y"
 
   int ival;
   double fval;
   char sval[100];
 
-  symrec* sympointer;
-  node* exprpointer;
+  symrec* symrec_ptr;
+  numrec* numrec_ptr;
+  node* expr_ptr;
   void* none;
 
 #line 97 "include/parser.h"

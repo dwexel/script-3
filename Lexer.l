@@ -2,7 +2,8 @@
   #include <stdio.h>
   #include <math.h>
   #include <string.h>
-  // headers
+
+  // bridge headers
   #include <parser.h>
 %}
 
@@ -28,9 +29,7 @@ fn                    { return TOKEN_KEYWORD_FN;  }
 end                   { return TOKEN_KEYWORD_END; }
 
 {id}        {
-              // yylval->sval = yytext;
               strcpy(yylval->sval, yytext);
-              // printf("identifier: %s\n", yylval->sval);
               return TOKEN_ID;
             }
 

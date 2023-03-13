@@ -6,15 +6,8 @@
   #include <parser.h>
   #include <lexer.h>
 
-
-  // #include <deque.h>
-  // #include <stack.h>
-  
-  #include <sym.h>
+  // global symbol table
   symrec *defs;
-
-
-  
 
   void yyerror(yyscan_t scanner, const char *msg) 
   {
@@ -28,8 +21,7 @@
 %parse-param { void* scanner }
 
 %code requires {
-  #include <sym.h>
-
+  #include <symstack.h>
 }
 
 %union {
@@ -37,8 +29,9 @@
   double fval;
   char sval[100];
 
-  symrec* sympointer;
-  node* exprpointer;
+  symrec* symrec_ptr;
+  numrec* numrec_ptr;
+  node* expr_ptr;
   void* none;
 }
 
@@ -63,15 +56,14 @@
 %type <none> input
 %type <none> line
 
-
-
-%type <exprpointer> expr
-%type <fval> number
-
 %type <none> def
 %type <none> call
 
-%type <sympointer> params
+%type <expr_ptr> expr
+%type <symrec_ptr> params
+%type <numrec_ptr> args
+
+%type <fval> number
 
 %left "+"
 %left "*"
@@ -80,10 +72,8 @@
 
 start:
   input                     {
-                              if (yychar == YYEOF) {
-                                //printf("input parsed\n"); 
-                                //printf("defs: \n");
-                                //print_list(defs);
+                              if (yychar == YYEOF) 
+                              {
                               }
                             }
 
@@ -94,37 +84,82 @@ line:
   call                      { }
   | def                     { }
 
-
 call:
-  "ID" "(" params ")"         {
-                                // printf("call parsed, args:\n");
-                                // print_list($3);
+  "ID" "(" args ")"         {
+                              symrec *funcsym = getfromlist(defs, $1);                              
 
-                                symrec *def = getfromlist(defs, $1);
-                                if (def) {
-                                  printf("function exists\n\n");
-                                  print_node(def->value.exprpointer);
-                                  printf("value: \t%lf\n", evaluate_node(def->value.exprpointer));
-                                  
+                              if (funcsym) {
+                                symrec *params = funcsym->value.fn->params;
+                                numrec *args = $3;
+
+                                if (!params) {
+                                  puts("no params");
                                 }
+                                if (!args) {
+                                  puts("no args");
+                                }
+
+                                if (params && args) {
+                                  puts("params and args");
+                                  fill(params, args);
+                                  print_list(params);
+                                }
+                                node *expr = funcsym->value.fn->expr;
+                                print_node(expr);
+
+                                printf("evaluation: \n%lf\n", evaluate_node_wsym(funcsym->value.fn->expr, params));
                               }
+                              else {
+                                printf("attempt to call nonexistent function: %s", $1);
+                              }
+                            }
 
 def:
   "fn" "ID" "(" params ")" expr "end"     {
+                                            // create
+                                            struct def *fn = malloc(sizeof(struct def));
+                                            fn->params = $4;
+                                            fn->expr = $6;
 
-                                            defs = addtolist(defs, $2, SYM_DEF);
-                                            defs->value.exprpointer = $6;
+                                            // add to list
+                                            defs = addtolist(defs, $2, 0);
+                                            defs->value.fn = fn;
+                                            
+                                            if (semantic_verify($6, $4)) {
+                                              printf("semantic verified: %s\n\n", $2);
+                                            }
+                                            else {
+                                              printf("error, semantic error\n");
+                                            }
                                           }
 
 params:
-                            { $$ = NULL;                   }
-  | "ID"                    { $$ = addtolist(NULL, $1, SYM_PARAM); }
-  | params "," "ID"         { $$ = addtolist($1, $3, SYM_PARAM);   }
+  %empty                      { $$ = NULL; }
+  | "ID"                      {
+                                $$ = newlist($1);
+                              }
+  | params "," "ID"           {
+                                addtolist_end($1, $3);
+                                $$ = $1;
+                              }
+
+args:
+  %empty                      { $$ = NULL; }
+  | number                    { 
+                                $$ = newlist_num($1);
+                              }
+  | args "," number           {
+                                addtolist_end_num($1, $3);
+                                $$ = $1;
+                              }
+
+
+
 
 expr:
   number                    {
                               double n = $1;
-                              $$ = newnode((node){kNum,  {n}}); 
+                              $$ = newnode((node) {kNum,  {n}}); 
                             }
   | expr "-" expr           {
                               node *left = $1;
@@ -137,7 +172,7 @@ expr:
                               $$ = newnode((node) {kSum, {.binary = {left, right}}});  
                             } 
   | expr "/" expr           { 
-                              node *left = $1; 
+                              node *left = $1;
                               node *right = $3;
                               $$ = newnode((node) {kDiv, {.binary = {left, right}}});  
                             }
@@ -147,10 +182,14 @@ expr:
                               $$ = newnode((node) {kMult, {.binary = {left, right}}});  
                             }
   | "(" expr ")"            { 
-                              $$ = $2; 
+                              $$ = $2;
                             }
   | "ID"                    {
                               $$ = newnode((node){kSym, {.symbol = {strdup($1)}}});
+                            }
+  | call                    { 
+                              // IMPLEMENT LATER
+                              $$ = 0;
                             }
 
 number:
