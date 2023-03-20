@@ -3,11 +3,12 @@ FILES = lexer.c parser.c main.c symstack.c
 
 OBJS = $(FILES:%.c=obj/%.o)
 
-FLEX = win_flex
-BISON = win_bison
+FLEX = flex
+BISON = bison
 
 CC = gcc
-CFLAGS = -I"C:\Users\dexte\Documents\GitHub\script-3\include"
+#CFLAGS = -I"C:\Users\dexte\Documents\GitHub\script-3\include"
+CFLAGS = -I"include"
 HEADERS = include
 
 build/main: $(OBJS)
@@ -24,9 +25,14 @@ parser.c parser.h: parser.y lexer.c
 	$(BISON) --output=parser.c --defines=$(HEADERS)/parser.h parser.y
 
 clean:
-# rm -f *.o *~ lexer.c lexer.h parser.c parser.h main
-	del lexer.c parser.c
+	rm -f *~ lexer.c parser.c
+#	del lexer.c parser.c
 
 cleanobj:
 	rmdir /s /q ".\obj"
 	mkdir ".\obj"
+
+run:
+	build/main
+
+.PHONY = clean cleanobj run

@@ -4,111 +4,70 @@
 #include <stdbool.h>
 
 
-typedef struct symrec symrec;
-
-
-// nodes for expressions
+typedef struct _symrec symrec;
 typedef struct _node node;
+
+
+enum _kind { kNum, kSum, kDiff, kMult, kDiv, 
+
+	kVar,
+	kCall,
+
+	kDef 
+	};
+
 typedef double nVal;
 
-// symbol = var
-// call = call
-enum _kind { kNum, kSum, kDiff, kMult, kDiv, kSym, kCall };
 struct _number { nVal value; };
-struct _binaryOperation { struct _node *left, *right; };
+struct _binaryOperation { node *left, *right; };
 
-struct _symbol { char* name; };
-struct _functionCall { char* name; symrec* args; };
+struct _var { char* name; };
+struct _call { char* name; symrec* args; };
 
 struct _node {
 	enum _kind kind;
 	union _expression {
 		struct _number number;
 		struct _binaryOperation binary;
-		struct _symbol symbol;
-		struct _functionCall call;
+		struct _var var;
+		struct _call call;
 	} e;
 };
 
 node *newnode(node n);
 void print_node(const node *n);
-nVal evaluate_node(const node *n);
-
-bool semantic_verify(const node *expr, symrec *args);
-nVal evaluate_node_wsym(const node *n, symrec *symbols);
-
-
-// nonymous
-// enum _type { number, function };
-// struct _symbol {
-// 	char *name;
-// 	enum _type type;
-// 	union _value {
-// 		double num;
-// 		int this_is_a_function;
-// 	} v;
-// };
+void print_node_wsym(const node *ptr, symrec *table);
 
 
 
-// sym types
-
-#define SYMBOL_NUMBER 1
-#define SYMBOL_ID 2
-#define SYMBOL_DEF 3
-
-struct def {
-	symrec *params;
-	node *expr;
-};
-
-struct symrec {
-	char *name;
-	int type;
-	union	{
-		double f;
-		struct def *fn;
-	} value;
-	struct symrec *next;
-};
-
-// symrec *putsym (char const *name, int sym_type);
-// symrec *getsym (char const *name);
-
-symrec *addtolist(symrec *prev, const char *name, int sym_type);
-symrec *getfromlist(symrec *start, const char *name);
-int print_list(symrec *start);
-
-symrec *newlist(const char *name);
-symrec *addtolist_end(symrec *start, const char *name);
-
-// number lists
-typedef struct _numrec numrec;
-struct _numrec {
-	nVal val;
-	numrec *next;
-};
-
-numrec *newlist_num(nVal val);
-numrec *addtolist_end_num(numrec *start, nVal val);
-int print_list_num(numrec *start);
-
-//
-//
-
-void fill(symrec *params, numrec *args);
+// nVal evaluate_node(const node *n);
+// bool semantic_verify(const node *expr, symrec *args);
+// nVal evaluate_node_wsym(const node *n, symrec *symbols);
 
 
+
+// void fill(symrec *params, numrec *args);
 
 
 struct actrec {
-	// char *name;
-	// struct actrec *prev;
-	symrec *args;
+	symrec *symbols;
+	node *expr;
 };
 
 typedef struct actrec T;
+
 typedef struct stack stack;
+
+/* Minimal stack size (expressed in number of elements) for which space is allocated. It should be at least 1. */
+#define MINIMUM_SIZE 1
+/* How much more memory is allocated each time a stack grows out of its allocated segment. */
+#define GROWTH_FACTOR 2
+
+struct stack {
+   T *bottom;
+   T *top;
+   T *allocated_top;
+};
 
 
 // stack functions
@@ -122,10 +81,32 @@ void compress(stack *s);
 
 
 
-// call stack functions
-extern stack *call_stack;
-void push_call(symrec *args);
-void print_stack();
+
+
+// symbol lists
+// enum _symkind { kNum, kFun };
+
+struct _symrec {
+	enum _kind kind;
+	char *name;
+	union {
+		nVal number;
+		node* expr;
+	} value;
+	struct _symrec *next;
+};
+
+// symrec *newsym(char *name, nVal value);
+// symrec *putsym(symrec* prev_top, symrec *top);
+// void print_list(symrec *top);
+
+symrec *newsym(symrec s);
+symrec *putsym(symrec *prev_top, symrec *top);
+void print_list(symrec *top);
+
+symrec *getsym(symrec *start, const char *name);
+
+
 
 
 

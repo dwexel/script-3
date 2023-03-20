@@ -1,0 +1,26 @@
+{
+	"terminal.integrated.profiles.windows": {
+		"PowerShell": {
+			"source": "PowerShell",
+			"icon": "terminal-powershell"
+		},
+		"Command Prompt": {
+			"path": [
+				"${env:windir}\\Sysnative\\cmd.exe",
+				"${env:windir}\\System32\\cmd.exe"
+			],
+			"args": [],
+			"icon": "terminal-cmd"
+		},
+		"Git Bash": {
+			"source": "Git Bash"
+		},
+		"msys": {
+			"path": "C:\\msys64\\usr\\bin\\bash.exe",
+			"args": ["--login", "-i"]
+		},
+		"msys ucrt64": {
+			"path": "C:\\msys64\\ucrt64.exe",
+		}
+	}
+}

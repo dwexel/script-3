@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.7.4.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 23 "parser.y"
+#line 19 "parser.y"
 
   #include <symstack.h>
 
@@ -69,11 +69,10 @@ extern int yydebug;
     TOKEN_LBRACE = 264,            /* "{"  */
     TOKEN_RBRACE = 265,            /* "}"  */
     TOKEN_COMMA = 266,             /* ","  */
-    TOKEN_KEYWORD_FN = 267,        /* "fn"  */
-    TOKEN_KEYWORD_END = 268,       /* "end"  */
-    TOKEN_INTEGER = 269,           /* "INTEGER"  */
-    TOKEN_DECIMAL = 270,           /* "DECIMAL"  */
-    TOKEN_ID = 271                 /* "ID"  */
+    TOKEN_EQUALS = 267,            /* "="  */
+    TOKEN_INTEGER = 268,           /* "INTEGER"  */
+    TOKEN_DECIMAL = 269,           /* "DECIMAL"  */
+    TOKEN_ID = 270                 /* "ID"  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -82,15 +81,16 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 27 "parser.y"
+#line 23 "parser.y"
 
   int ival;
   double fval;
   char sval[100];
 
-  symrec* symrec_ptr;
-  numrec* numrec_ptr;
-  node* expr_ptr;
+
+
+  symrec *symptr;
+  node* nodeptr;
   void* none;
 
 #line 97 "include/parser.h"
@@ -103,6 +103,8 @@ typedef union YYSTYPE YYSTYPE;
 
 
 
+
 int yyparse (void* scanner);
+
 
 #endif /* !YY_YY_INCLUDE_PARSER_H_INCLUDED  */

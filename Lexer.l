@@ -17,19 +17,19 @@ id    {alpha}*
 {whitespace}*         { continue; }
 {digit}+              { 
                         yylval->ival = atoi(yytext);
+                        // printf("%i\n", yylval->ival);
                         return TOKEN_INTEGER;
                       }
 
 {digit}+"."{digit}*   {
                         yylval->fval = atof(yytext);
+                        // printf("%i\n", yylval->fval);
                         return TOKEN_DECIMAL;
                       }
 
-fn                    { return TOKEN_KEYWORD_FN;  }
-end                   { return TOKEN_KEYWORD_END; }
-
 {id}        {
               strcpy(yylval->sval, yytext);
+              // printf("%s\n", yytext);
               return TOKEN_ID;
             }
 
@@ -44,9 +44,9 @@ end                   { return TOKEN_KEYWORD_END; }
 "}"         { return TOKEN_RBRACE; }
 
 ","         { return TOKEN_COMMA;  }
-
+"="         { return TOKEN_EQUALS; }
 
 
 .           {
-              printf("unrecognized character: %s\n", yytext);
+              // printf("unrecognized character: %s\n", yytext);
             }
