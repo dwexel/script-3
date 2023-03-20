@@ -38,15 +38,41 @@ node *newnode(node n);
 void print_node(const node *n);
 void print_node_wsym(const node *ptr, symrec *table);
 
+nVal evaluate(const node *n, symrec *table);
 
-
-// nVal evaluate_node(const node *n);
-// bool semantic_verify(const node *expr, symrec *args);
-// nVal evaluate_node_wsym(const node *n, symrec *symbols);
 
 
 
 // void fill(symrec *params, numrec *args);
+
+
+
+
+
+// symbol lists
+
+struct _symrec {
+	enum _kind kind;
+	char *name;
+	union {
+		nVal number;
+		node* expr;
+	} value;
+	struct _symrec *next;
+};
+
+// symrec *newsym(char *name, nVal value);
+// symrec *putsym(symrec* prev_top, symrec *top);
+// void print_list(symrec *top);
+
+symrec *newsym(symrec s);
+symrec *putsym(symrec *prev_top, symrec *top);
+void print_list(symrec *top);
+
+// symrec *getsym(symrec *start, const char *name);
+symrec *getsym(symrec *start, int kind, const char *name);
+
+
 
 
 struct actrec {
@@ -55,7 +81,6 @@ struct actrec {
 };
 
 typedef struct actrec T;
-
 typedef struct stack stack;
 
 /* Minimal stack size (expressed in number of elements) for which space is allocated. It should be at least 1. */
@@ -78,34 +103,6 @@ T peek(stack *s);
 bool empty(stack *s);
 void destroy(stack *s);
 void compress(stack *s);
-
-
-
-
-
-// symbol lists
-// enum _symkind { kNum, kFun };
-
-struct _symrec {
-	enum _kind kind;
-	char *name;
-	union {
-		nVal number;
-		node* expr;
-	} value;
-	struct _symrec *next;
-};
-
-// symrec *newsym(char *name, nVal value);
-// symrec *putsym(symrec* prev_top, symrec *top);
-// void print_list(symrec *top);
-
-symrec *newsym(symrec s);
-symrec *putsym(symrec *prev_top, symrec *top);
-void print_list(symrec *top);
-
-symrec *getsym(symrec *start, const char *name);
-
 
 
 

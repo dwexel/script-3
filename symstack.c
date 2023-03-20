@@ -19,30 +19,6 @@ node *newnode(node n)
    return p;
 }
 
-// nVal evaluate_node(const node *n)
-// {
-//    nVal leftValue;
-//    nVal rightValue;
-
-//    switch (n->kind) {
-//       case kNum: return n->e.number.value;
-//       case kSum: case kDiff: case kMult: case kDiv:
-//          leftValue = evaluate_node(n->e.binary.left);
-//          rightValue = evaluate_node(n->e.binary.right);
-//          switch (n->kind) {
-//             case kSum: return leftValue + rightValue;
-//             case kDiff: return leftValue - rightValue;
-//             case kMult: return leftValue * rightValue;
-//             case kDiv: 
-//                if (rightValue == 0) // catch epsilon
-//                   perror("division by zero");
-//                return leftValue / rightValue;
-//          }
-//       default:
-//          perror("internal error: illegal expression kind"); 
-//    }  
-// }
-
 void print_node(const node *ptr)
 {
    node n = *ptr;
@@ -61,8 +37,7 @@ void print_node(const node *ptr)
          break;
       
       case kVar:
-         printf("kind: var\n");
-         printf("id: %s\n", n.e.var.name);
+         printf("kind: var, id: %s\n", n.e.var.name);
          break;
 
       case kCall:
@@ -80,54 +55,88 @@ void print_node_wsym(const node *ptr, symrec *table)
    switch (n.kind) {
       case kNum:
          nVal v = n.e.number.value;
-         printf("kind: number, value: %lf\n", v);
+         printf("kind number, value: %g\n", v);
          break;
       
       case kSum: case kDiff: case kMult: case kDiv:
          node *left = n.e.binary.left;
          node *right = n.e.binary.right;
          printf("kind: binary\n");
-         print_node(left);
-         print_node(right);
+         print_node_wsym(left, table);
+         print_node_wsym(right, table);
          break;
       
       case kVar: case kCall:
          symrec *s = NULL;
          switch (n.kind) {
             case kVar:
-               printf("kind: var");
-               s = getsym(table, n.e.var.name);
+               printf("%s\tvar\t", n.e.var.name);
+               s = getsym(table, kVar, n.e.var.name);
+               if (s) {
+                  printf("%g\n", s->value.number);
+               }
                break;
 
             case kCall:
-               printf("kind: call");
-               s = getsym(table, n.e.call.name);
-               
+               printf("%s\tcall\n", n.e.call.name);
+               printf("args:\n");
+               print_list(n.e.call.args);
+               // note
+               s = getsym(table, kDef, n.e.call.name);
+               if (s) {
+                  // print_node(s->value.expr);
+                  print_node_wsym(s->value.expr, n.e.call.args);
+               }
                break;
          }
-
          if (!s) {
             printf("error: symbol could not be found\n");
          }
-
          break;
-
-      // case kSym:
-      //    printf("kind: symbol\n");
-      //    printf("id: %s\n", n.e.symbol.name);
-         // printf("")
-         // break;
-
-      // case kCall:
-      //    printf("kind: call");
-      //    symrec *fn = getsym(table, n.e.call.name);
-      //    printf("ref: %p\n", fn);
-         
-         // recurse
 
       default:
          break;
    }
+}
+
+nVal evaluate(const node *n, symrec *table)
+{
+   nVal leftValue;
+   nVal rightValue;
+
+   switch (n->kind) {
+      case kNum: return n->e.number.value;
+      case kSum: case kDiff: case kMult: case kDiv:
+         leftValue = evaluate(n->e.binary.left, table);
+         rightValue = evaluate(n->e.binary.right, table);
+         switch (n->kind) {
+            case kSum: return leftValue + rightValue;
+            case kDiff: return leftValue - rightValue;
+            case kMult: return leftValue * rightValue;
+            case kDiv: 
+               if (rightValue == 0) // catch epsilon
+                  perror("division by zero");
+               return leftValue / rightValue;
+         }
+      case kVar: case kCall:
+         symrec *sym = NULL;
+         switch (n->kind) {
+            case kVar:
+               sym = getsym(table, kVar, n->e.var.name);
+               if (sym) return sym->value.number;
+               break;
+               
+            case kCall:
+               sym = getsym(table, kDef, n->e.call.name);
+               if (sym) return evaluate(sym->value.expr, n->e.call.args);
+               break;
+         }
+         if (!sym) printf("runtime error, symbol could not be found\n");
+         break;
+
+      default:
+         perror("internal error: illegal expression kind"); 
+   } 
 }
 
 // bool semantic_verify(const node *expr, symrec *args)
@@ -205,31 +214,43 @@ void print_list(symrec *top)
      	printf("%p\t%s\t", p, p->name);
       switch (p->kind)
       {
-         case kNum:
-            printf("num\t%g\n", p->value.number);
+         case kNum: printf("num\t%g\n", p->value.number);
             break;
-
-         case kDef:
-            printf("def\n");
+         case kDef: printf("def\n");
             break;
-
-         default:
-            break;
+         default: break;
       }
    }
 }
 
-symrec *getsym(symrec *start, const char *name)
+symrec *getsym(symrec *start, int kind, const char *name)
 {
    for (symrec *p = start; p; p = p->next)
    {
-		if (strcmp (p->name, name) == 0)
-      {
-         return p;
-      }  
+      // printf("\nkind test: %i\t%i\n", p->kind, kind);
+      if (p->kind = kind) {
+   		if (strcmp (p->name, name) == 0) {
+            return p;
+         }
+      }
+      else {
+         printf("here\n");
+      }
    }
 	return NULL;
 }
+
+// symrec *getsym_wkind(symrec *start, int kind, const char *name)
+// {
+//    for (symrec *p = start; p; p = p->next) {
+//       if (p->kind = kind) {
+//          if (strcmp (p->name, name) == 0) {
+//             return p;
+//          }
+//       }
+//    }
+// }
+
 
 
 /* Creates a new stack. */

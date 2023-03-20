@@ -12,9 +12,9 @@ digit [0-9]
 alpha [A-Za-z_]
 id    {alpha}*
 
+
 %%
 
-{whitespace}*         { continue; }
 {digit}+              { 
                         yylval->ival = atoi(yytext);
                         // printf("%i\n", yylval->ival);
@@ -45,6 +45,14 @@ id    {alpha}*
 
 ","         { return TOKEN_COMMA;  }
 "="         { return TOKEN_EQUALS; }
+
+
+"//"[^\n]*            { 
+                        // printf("comment\n");
+                        continue;
+                      }
+{whitespace}*         { continue; }
+
 
 
 .           {

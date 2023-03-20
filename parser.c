@@ -521,9 +521,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    79,    79,    87,    88,    96,    97,   100,   105,   109,
-     114,   119,   124,   129,   132,   135,   141,   142,   143,   146,
-     150,   151
+       0,    79,    79,    87,    88,   102,   103,   106,   111,   115,
+     120,   125,   130,   135,   138,   141,   146,   147,   148,   151,
+     155,   156
 };
 #endif
 
@@ -1126,138 +1126,143 @@ yyreduce:
                             { 
                               // print_list($1);
                               // evaluate with symbols
-                              print_node_wsym((yyvsp[0].nodeptr), (yyvsp[-1].symptr));
-                              // evaluate($1, $2);
-                            }
-#line 1133 "parser.c"
-    break;
+                              // for (symrec *p = $1; p; p = p->next)
+                              // {
+                              //   print_node(p->value.expr);
+                              // }
 
-  case 6: /* defs: defs def  */
-#line 97 "parser.y"
-                            { (yyval.symptr) = putsym((yyvsp[-1].symptr), (yyvsp[0].symptr)); }
+                              // print_node_wsym($2, $1);
+                              nVal n = evaluate((yyvsp[0].nodeptr), (yyvsp[-1].symptr));
+                              printf("%g\n", n);
+                            }
 #line 1139 "parser.c"
     break;
 
+  case 6: /* defs: defs def  */
+#line 103 "parser.y"
+                            { (yyval.symptr) = putsym((yyvsp[-1].symptr), (yyvsp[0].symptr)); }
+#line 1145 "parser.c"
+    break;
+
   case 7: /* def: "ID" "{" expr "}"  */
-#line 100 "parser.y"
+#line 106 "parser.y"
                                           { 
-                                            (yyval.symptr) = newsym((symrec) {kDef, strdup((yyvsp[-3].sval)), {.expr = NULL}, NULL});
+                                            (yyval.symptr) = newsym((symrec) {kDef, strdup((yyvsp[-3].sval)), {.expr = (yyvsp[-1].nodeptr)}, NULL});
                                           }
-#line 1147 "parser.c"
+#line 1153 "parser.c"
     break;
 
   case 8: /* expr: number  */
-#line 105 "parser.y"
+#line 111 "parser.y"
                             {
                               nVal n = (yyvsp[0].fval);
                               (yyval.nodeptr) = newnode((node) {kNum,  {n}}); 
                             }
-#line 1156 "parser.c"
+#line 1162 "parser.c"
     break;
 
   case 9: /* expr: expr "-" expr  */
-#line 109 "parser.y"
+#line 115 "parser.y"
                             {
                               node *left = (yyvsp[-2].nodeptr);
                               node *right = (yyvsp[0].nodeptr);
                               (yyval.nodeptr) = newnode((node) {kDiff, {.binary = {left, right}}});  
                             }
-#line 1166 "parser.c"
+#line 1172 "parser.c"
     break;
 
   case 10: /* expr: expr "+" expr  */
-#line 114 "parser.y"
+#line 120 "parser.y"
                             { 
                               node *left = (yyvsp[-2].nodeptr); 
                               node *right = (yyvsp[0].nodeptr);
                               (yyval.nodeptr) = newnode((node) {kSum, {.binary = {left, right}}});  
                             }
-#line 1176 "parser.c"
+#line 1182 "parser.c"
     break;
 
   case 11: /* expr: expr "/" expr  */
-#line 119 "parser.y"
+#line 125 "parser.y"
                             { 
                               node *left = (yyvsp[-2].nodeptr);
                               node *right = (yyvsp[0].nodeptr);
                               (yyval.nodeptr) = newnode((node) {kDiv, {.binary = {left, right}}});  
                             }
-#line 1186 "parser.c"
+#line 1192 "parser.c"
     break;
 
   case 12: /* expr: expr "*" expr  */
-#line 124 "parser.y"
+#line 130 "parser.y"
                             {
                               node *left = (yyvsp[-2].nodeptr); 
                               node *right = (yyvsp[0].nodeptr);
                               (yyval.nodeptr) = newnode((node) {kMult, {.binary = {left, right}}});  
                             }
-#line 1196 "parser.c"
+#line 1202 "parser.c"
     break;
 
   case 13: /* expr: "(" expr ")"  */
-#line 129 "parser.y"
+#line 135 "parser.y"
                             { 
                               (yyval.nodeptr) = (yyvsp[-1].nodeptr); 
                             }
-#line 1204 "parser.c"
+#line 1210 "parser.c"
     break;
 
   case 14: /* expr: "ID"  */
-#line 132 "parser.y"
+#line 138 "parser.y"
                             { 
                               (yyval.nodeptr) = newnode((node){kVar, {.var = {strdup((yyvsp[0].sval))}}}); 
                             }
-#line 1212 "parser.c"
+#line 1218 "parser.c"
     break;
 
   case 15: /* expr: "ID" "(" args ")"  */
-#line 135 "parser.y"
+#line 141 "parser.y"
                             {
-                              print_list((yyvsp[-1].symptr));
                               (yyval.nodeptr) = newnode((node){kCall, {.call = {strdup((yyvsp[-3].sval)), (yyvsp[-1].symptr)}}});
                             }
-#line 1221 "parser.c"
+#line 1226 "parser.c"
     break;
 
   case 16: /* args: %empty  */
-#line 141 "parser.y"
+#line 146 "parser.y"
                               { (yyval.symptr) = NULL;           }
-#line 1227 "parser.c"
+#line 1232 "parser.c"
     break;
 
   case 17: /* args: statement  */
-#line 142 "parser.y"
+#line 147 "parser.y"
                               { (yyval.symptr) = (yyvsp[0].symptr);             }
-#line 1233 "parser.c"
+#line 1238 "parser.c"
     break;
 
   case 18: /* args: args "," statement  */
-#line 143 "parser.y"
+#line 148 "parser.y"
                               { (yyval.symptr) = putsym((yyvsp[-2].symptr), (yyvsp[0].symptr)); }
-#line 1239 "parser.c"
+#line 1244 "parser.c"
     break;
 
   case 19: /* statement: "ID" "=" number  */
-#line 146 "parser.y"
+#line 151 "parser.y"
                               { (yyval.symptr) = newsym((symrec) {kNum, strdup((yyvsp[-2].sval)), {.number = (yyvsp[0].fval)}, NULL}); }
-#line 1245 "parser.c"
+#line 1250 "parser.c"
     break;
 
   case 20: /* number: "INTEGER"  */
-#line 150 "parser.y"
+#line 155 "parser.y"
                               { (yyval.fval) = (double) (yyvsp[0].ival); }
-#line 1251 "parser.c"
+#line 1256 "parser.c"
     break;
 
   case 21: /* number: "DECIMAL"  */
-#line 151 "parser.y"
+#line 156 "parser.y"
                               { (yyval.fval) = (yyvsp[0].fval);          }
-#line 1257 "parser.c"
+#line 1262 "parser.c"
     break;
 
 
-#line 1261 "parser.c"
+#line 1266 "parser.c"
 
       default: break;
     }

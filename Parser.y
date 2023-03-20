@@ -88,8 +88,14 @@ input:
   | defs expr               { 
                               // print_list($1);
                               // evaluate with symbols
-                              print_node_wsym($2, $1);
-                              // evaluate($1, $2);
+                              // for (symrec *p = $1; p; p = p->next)
+                              // {
+                              //   print_node(p->value.expr);
+                              // }
+
+                              // print_node_wsym($2, $1);
+                              nVal n = evaluate($2, $1);
+                              printf("%g\n", n);
                             }
 
 defs:
@@ -98,7 +104,7 @@ defs:
 
 def:
   "ID" "{" expr "}"                       { 
-                                            $$ = newsym((symrec) {kDef, strdup($1), {.expr = NULL}, NULL});
+                                            $$ = newsym((symrec) {kDef, strdup($1), {.expr = $3}, NULL});
                                           }
 
 expr:
@@ -133,7 +139,6 @@ expr:
                               $$ = newnode((node){kVar, {.var = {strdup($1)}}}); 
                             }
   | "ID" "(" args ")"       {
-                              print_list($3);
                               $$ = newnode((node){kCall, {.call = {strdup($1), $3}}});
                             }
 

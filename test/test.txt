@@ -1,11 +1,11 @@
 add {
-	x + y + z
+	a + y + z
 }
 
 double {
 	x * 2
 }
 
-add(x=1, y=2, z=3)
+add(a=1, y=2, z=8)
 
 
