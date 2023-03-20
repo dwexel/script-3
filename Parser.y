@@ -27,7 +27,6 @@
 
 
 
-  symrec *symptr;
   node* nodeptr;
   void* none;
 }
@@ -38,6 +37,8 @@
 %token TOKEN_STAR        "*"
 %token TOKEN_HYPH        "-"
 %token TOKEN_FSLASH      "/"
+%token TOKEN_CARET       "^"
+
 %token TOKEN_LBRACE      "{"
 %token TOKEN_RBRACE      "}"
 %token TOKEN_COMMA       ","
@@ -55,23 +56,21 @@
 %type <none> start
 %type <none> input
 
-// list
-%type <symptr> defs
-%type <symptr> def
 
-// expression trees
-// %type <nodeptr> call
+%type <nodeptr> defs
+%type <nodeptr> def
 %type <nodeptr> expr
-
-// lists
-%type <symptr> statement
-%type <symptr> args
+%type <nodeptr> statement
+%type <nodeptr> args
 
 // literals
 %type <fval> number
 
 %left "+"
 %left "*"
+%left "-"
+%left "/"
+%left "^"
 
 %%
 
@@ -86,26 +85,24 @@ start:
 input:
   %empty
   | defs expr               { 
-                              // print_list($1);
-                              // evaluate with symbols
-                              // for (symrec *p = $1; p; p = p->next)
-                              // {
-                              //   print_node(p->value.expr);
-                              // }
-
-                              // print_node_wsym($2, $1);
-                              nVal n = evaluate($2, $1);
-                              printf("%g\n", n);
+                              // print_node($2);
+                              double n = evaluate($2, $1);
+                              printf("result: %g\n", n);
                             }
 
 defs:
   %empty
-  | defs def                { $$ = putsym($1, $2); }
+  | defs def                { 
+                              node *top = $2;
+                              node *prev = $1;
+                              top->e.li.next = prev;
+                              $$ = top;
+                            }
 
 def:
-  "ID" "{" expr "}"                       { 
-                                            $$ = newsym((symrec) {kDef, strdup($1), {.expr = $3}, NULL});
-                                          }
+  "ID" "{" expr "}"         { 
+                              $$ = newnode((node) {kDef, {.li = {strdup($1), $3, NULL}}});
+                            }
 
 expr:
   number                    {
@@ -128,27 +125,44 @@ expr:
                               $$ = newnode((node) {kDiv, {.binary = {left, right}}});  
                             }
   | expr "*" expr           {
-                              node *left = $1; 
+                              node *left = $1;
                               node *right = $3;
                               $$ = newnode((node) {kMult, {.binary = {left, right}}});  
                             }
-  | "(" expr ")"            { 
-                              $$ = $2; 
+  | expr "^" expr           {
+                              node *left = $1;
+                              node *right = $3;
+                              $$ = newnode((node) {kPow, {.binary = {left, right}}});  
                             }
-  | "ID"                    { 
-                              $$ = newnode((node){kVar, {.var = {strdup($1)}}}); 
+  | "(" expr ")"            {
+                              $$ = $2;
+                            }
+  | "ID"                    {
+                              $$ = newnode((node) {kVar, {.id = {strdup($1)}}});
                             }
   | "ID" "(" args ")"       {
-                              $$ = newnode((node){kCall, {.call = {strdup($1), $3}}});
+                              $$ = newnode((node) {kCall, {.link = {strdup($1), $3}}});
                             }
 
 args:
-  %empty                      { $$ = NULL;           }
-  | statement                 { $$ = $1;             }
-  | args "," statement        { $$ = putsym($1, $3); }
+  %empty                      { 
+                                $$ = NULL;       
+                              }
+  | statement                 { 
+                                $$ = $1;
+                              }
+  | args "," statement        {
+                                node *top = $3;
+                                node *prev = $1;
+                                top->e.li.next = prev;
+                                $$ = top;
+                              }
 
 statement:
-  "ID" "=" number             { $$ = newsym((symrec) {kNum, strdup($1), {.number = $3}, NULL}); }
+  "ID" "=" expr               {
+                                // $$ = newnode((node) {kLink, {.link = {strdup($1), $3}}});
+                                $$ = newnode((node) {kArg, {.li = {strdup($1), $3, NULL}}});
+                              }
   
 
 number:

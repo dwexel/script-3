@@ -1,11 +1,5 @@
-add {
-	a + y + z
-}
-
 double {
 	x * 2
 }
 
-add(a=1, y=2, z=8)
-
-
+1 + double(x = 4)

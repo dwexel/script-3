@@ -3,47 +3,51 @@
 
 #include <stdbool.h>
 
-
-typedef struct _symrec symrec;
 typedef struct _node node;
 
+enum _kind { 
+	kNum,
 
-enum _kind { kNum, kSum, kDiff, kMult, kDiv, 
+	kSum, 
+	kDiff, 
+	kMult, 
+	kDiv,
+	kPow,
 
 	kVar,
-	kCall,
 
-	kDef 
+	kCall,
+	kDef,
+	kArg
+
 	};
 
 typedef double nVal;
 
 struct _number { nVal value; };
-struct _binaryOperation { node *left, *right; };
-
-struct _var { char* name; };
-struct _call { char* name; symrec* args; };
+struct _binary { node *left, *right; };
+struct _id { char* name; };
+struct _link { char* name; node* expr; };
+struct _li { char* name; node* expr; node* next; };
 
 struct _node {
 	enum _kind kind;
 	union _expression {
 		struct _number number;
-		struct _binaryOperation binary;
-		struct _var var;
-		struct _call call;
+		struct _binary binary;
+		struct _id id;
+		struct _link link;
+		struct _li li;
 	} e;
 };
 
 node *newnode(node n);
+
 void print_node(const node *n);
-void print_node_wsym(const node *ptr, symrec *table);
 
-nVal evaluate(const node *n, symrec *table);
-
+nVal evaluate(const node *expression, const node *lookup);
 
 
-
-// void fill(symrec *params, numrec *args);
 
 
 
@@ -51,32 +55,34 @@ nVal evaluate(const node *n, symrec *table);
 
 // symbol lists
 
-struct _symrec {
-	enum _kind kind;
-	char *name;
-	union {
-		nVal number;
-		node* expr;
-	} value;
-	struct _symrec *next;
-};
+// enum symrec_kind {
+// 	kDef,
+// 	kState,
+// };
 
-// symrec *newsym(char *name, nVal value);
-// symrec *putsym(symrec* prev_top, symrec *top);
+// struct _symrec {
+// 	enum symrec_kind kind;
+// 	char *name;
+// 	node *expr;
+// 	symrec *next;
+// };
+
+
+// symrec *newsym(symrec s);
+// symrec *putsym(symrec *prev_top, symrec *top);
+// symrec *getsym(symrec *start, int kind, const char *name);
+// symrec *getsym(symrec *start, const char *name);
+
 // void print_list(symrec *top);
 
-symrec *newsym(symrec s);
-symrec *putsym(symrec *prev_top, symrec *top);
-void print_list(symrec *top);
 
-// symrec *getsym(symrec *start, const char *name);
-symrec *getsym(symrec *start, int kind, const char *name);
+
 
 
 
 
 struct actrec {
-	symrec *symbols;
+	// symrec *symbols;
 	node *expr;
 };
 

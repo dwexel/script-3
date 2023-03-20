@@ -66,13 +66,14 @@ extern int yydebug;
     TOKEN_STAR = 261,              /* "*"  */
     TOKEN_HYPH = 262,              /* "-"  */
     TOKEN_FSLASH = 263,            /* "/"  */
-    TOKEN_LBRACE = 264,            /* "{"  */
-    TOKEN_RBRACE = 265,            /* "}"  */
-    TOKEN_COMMA = 266,             /* ","  */
-    TOKEN_EQUALS = 267,            /* "="  */
-    TOKEN_INTEGER = 268,           /* "INTEGER"  */
-    TOKEN_DECIMAL = 269,           /* "DECIMAL"  */
-    TOKEN_ID = 270                 /* "ID"  */
+    TOKEN_CARET = 264,             /* "^"  */
+    TOKEN_LBRACE = 265,            /* "{"  */
+    TOKEN_RBRACE = 266,            /* "}"  */
+    TOKEN_COMMA = 267,             /* ","  */
+    TOKEN_EQUALS = 268,            /* "="  */
+    TOKEN_INTEGER = 269,           /* "INTEGER"  */
+    TOKEN_DECIMAL = 270,           /* "DECIMAL"  */
+    TOKEN_ID = 271                 /* "ID"  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -89,7 +90,6 @@ union YYSTYPE
 
 
 
-  symrec *symptr;
   node* nodeptr;
   void* none;
 

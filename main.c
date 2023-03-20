@@ -9,6 +9,8 @@
 // my types
 #include "symstack.h"
 
+// #define BUFSIZE 800
+
 
 int yyparse(yyscan_t scanner);
 int compile(const char *source) {
@@ -31,29 +33,35 @@ int compile(const char *source) {
 
 void catfile(char* destination, int size, char *filename) {
 	FILE *f = fopen(filename, "r");
-    if (f == NULL) perror("file not found");
-	char line[100];
-	while (fgets(line, 100, f)) 
-    {
-        strcat(destination, line);
+
+    if (!f) {
+        perror("file not found");
+        exit(1);
     }
+
+    int read = fread(destination, 1, size, f);
+    printf("file size: %i\n", read);
     fclose(f);
 }
 
 int main(int argc, char** argv) {
-    // ++argv;
-    // --argc;
+    ++argv;
+    --argc;
+
+    // for (int i = 0; i < argc; i++) {
+    //     printf("%s\n", argv[i]);
+    // }
 
     // printf("running...\n\n");
     // call_stack = new_stack();
 
-
     char file[800];
-    catfile(file, 800, "./test/test.txt");
+    
+    // catfile(file, 800, "./test/test.txt");
+    catfile(file, 800, argv[0]);
+
+
     int code = compile(file);
-
-
     // print_stack();
-
     return code;
 }

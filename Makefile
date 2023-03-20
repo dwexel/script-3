@@ -33,6 +33,6 @@ cleanobj:
 	mkdir ".\obj"
 
 run:
-	build/main
+	build/main "./test/test.txt"
 
 .PHONY = clean cleanobj run
